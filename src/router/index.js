@@ -71,6 +71,11 @@ const routes = [
             name: 'KategoriAdd',
             component: () => import('../pages/kategori/tambah.vue')
           },
+          {
+            path: ':id/edit',
+            name: 'KategoriEdit',
+            component: () => import('../pages/kategori/edit.vue')
+          },
         ]
       },
     ],

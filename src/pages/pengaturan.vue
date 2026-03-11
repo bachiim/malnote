@@ -11,7 +11,7 @@
         slim
       />
       <v-list-item
-        prepend-icon="mdi-shape"
+        prepend-icon="mdi-tag"
         append-icon="mdi-chevron-right"
         title="Kelola Kategori"
         to="/kategori"

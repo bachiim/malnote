@@ -76,18 +76,22 @@
 <script setup>
 import { useAppBar } from '../../composables/useAppBar';
 import { useLayout } from '../../composables/useLayout';
-import { ref, onMounted, onUnmounted, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, onUnmounted, reactive, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { categoryService } from '../../services/category';
-import { COLORS, CATEGORY_ICONS } from '../../utils/const';
 import { RULES } from '../../utils/rules';
+import { CATEGORY_ICONS, COLORS } from '../../utils/const';
+import { confirm } from '@tauri-apps/plugin-dialog';
 import { message } from '@tauri-apps/plugin-dialog';
 
 const router = useRouter()
+const route = useRoute()
 const { setAppBar } = useAppBar()
 setAppBar({
   left: 'back',
-  center: { type: 'title', text: 'Tambah Kategori' },
+  center: { type: 'title', text: 'Edit Kategori' },
+  right: 'delete',
+  onDelete: hapuHandler
 })
 
 const { showBottomNav } = useLayout()
@@ -95,22 +99,42 @@ onMounted(() => showBottomNav.value = false)
 onUnmounted(() => showBottomNav.value = true)
 
 const form_ref = ref()
+const loading = ref(false)
+const error = ref(null)
+
 const form = reactive({
   name: null,
-  type: 0,  // pengeluaran: 0, pemasukan: 1
-  icon: CATEGORY_ICONS[0],
-  color: COLORS[0],
+  type: null,
+  icon: null,
+  color: null,
 })
-const loading = ref(false)
+
+onMounted(async () => {
+  try {
+    const id = route.params.id
+    const category = await categoryService.get(id)
+
+    // Isi form dengan data kategori yang ada
+    const settings = JSON.parse(category.settings)
+    form.name = category.name
+    form.type = category.type === 'expense' ? 0 : 1
+    form.icon = settings.icon
+    form.color = settings.color
+  } catch (err) {
+    error.value = 'Gagal memuat data kategori'
+  }
+})
 
 async function simpanHandler() {
   const { valid } = await form_ref.value.validate()
   if (!valid) return
   if (!form.name.trim()) return
 
+  loading.value = true
+
   try {
-    loading.value = true
-    await categoryService.create({
+    const id = route.params.id
+    await categoryService.update(id, {
       name: form.name.trim(),
       type: form.type === 0 ? 'expense' : 'income',
       settings: { icon: form.icon, color: form.color },
@@ -118,6 +142,27 @@ async function simpanHandler() {
     router.back()
   } catch (e) {
     await message(e.toString(), {title: 'Terjadi Kesalahan', kind: 'error'})
+  } finally {
+    loading.value = false
+  }
+}
+
+async function hapuHandler() {
+  const answer = await confirm(
+    'Apakah Anda yakin ingin menghapus kategori ini?',
+    {title: 'Hapus Kategori', kind: 'warning'}
+  )
+  if (!answer) return
+
+  loading.value = true
+  error.value = null
+
+  try {
+    const id = route.params.id
+    await categoryService.delete(id)
+    router.back()
+  } catch (err) {
+    error.value = err?.message ?? 'Gagal menghapus kategori'
   } finally {
     loading.value = false
   }

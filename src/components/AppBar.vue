@@ -20,6 +20,7 @@
         <v-btn v-if="right === 'filter'" icon="mdi-filter-variant" @click="emit('filter')" />
         <v-btn v-if="right === 'add'" icon="mdi-plus" @click="onAdd?.()" />
         <v-btn v-if="right === 'more'" icon="mdi-dots-vertical" />
+        <v-btn v-if="right === 'delete'" icon="mdi-delete-outline" @click="onDelete?.()" />
       </v-col>
     </v-row>
   </v-app-bar>
@@ -32,7 +33,7 @@ import { useAppBar } from '../composables/useAppBar'
 
 const router = useRouter()
 const emit = defineEmits(['filter', 'add', 'month-change'])
-const { left, center, right, onAdd } = useAppBar()
+const { left, center, right, onAdd, onDelete } = useAppBar()
 
 // State bulan
 const currentDate = ref(new Date())

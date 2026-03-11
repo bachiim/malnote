@@ -1,5 +1,5 @@
 <template>
-  <v-bottom-navigation color="primary" v-model="value">
+  <v-bottom-navigation color="primary" v-model="value" grow>
     <v-btn value="/">
       <v-icon size="x-large">mdi-home-outline</v-icon>
     </v-btn>

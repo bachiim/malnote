@@ -19,18 +19,9 @@
       <div class="mt-3">
         <div>Saldo Terakhir</div>
 
-        <div class="d-flex align-center justify-space-between">
           <span class="text-headline-medium font-weight-bold">
             Rp {{ formattedBalance }}
           </span>
-          <v-btn
-            v-model="show"
-            :icon="show ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-            density="comfortable"
-            variant="plain"
-            @click="show = !show"
-          />
-        </div>
       </div>
     </v-card-text>
   </v-card>
@@ -50,9 +41,7 @@ const props = defineProps({
   }
 })
 
-const show = ref(false)
 const formattedBalance = computed(() => {
-  if (!show.value) return '••••••••'
   return new Intl.NumberFormat('id-ID', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2

@@ -36,16 +36,19 @@
             :title="item.description"
             :subtitle="item.category"
             class="py-2"
-            slim
             link
             v-else
           >
             <template #prepend>
-              <v-icon size="large">{{ item.icon }}</v-icon>
+              <v-avatar color="teal" size="large">
+                <v-icon size="x-large">
+                  {{ item.icon }}
+                </v-icon>
+              </v-avatar>
             </template>
             <template #append>
               <div class="text-right">
-                Rp {{ formatCurrency(item.amount) }}
+                {{ formatCurrency(item.amount) }}
               </div>
             </template>
           </v-list-item>
